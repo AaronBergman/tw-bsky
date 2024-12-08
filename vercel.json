@@ -9,7 +9,10 @@
     "routes": [
       {
         "src": "/api/post",
-        "dest": "api/post_message.py"
+        "dest": "api/post_message.py",
+        "methods": ["POST"],
+        "continue": true
       }
-    ]
+    ],
+    "public": true
   }

@@ -18,21 +18,31 @@ def setup_twitter():
     )
 
 class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
     def do_POST(self):
-        # Get content length and read the body
-        content_length = int(self.headers['Content-Length'])
-        body = self.rfile.read(content_length)
+        # Set CORS headers
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
 
         try:
+            # Get content length and read the body
+            content_length = int(self.headers['Content-Length'])
+            body = self.rfile.read(content_length)
+
             # Parse the body
             data = json.loads(body)
             message = data.get('message', '')
 
             if not message:
-                self.send_response(400)
-                self.send_header('Content-type', 'application/json')
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": "Message cannot be empty."}).encode())
+                self._send_error_response(400, "Message cannot be empty.")
                 return
 
             # Initialize clients for each request
@@ -57,15 +67,14 @@ class handler(BaseHTTPRequestHandler):
             except Exception as e:
                 response["twitter_error"] = str(e)
 
-            # Send successful response
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
             self.wfile.write(json.dumps(response).encode())
 
         except Exception as e:
-            # Handle any unexpected errors
-            self.send_response(500)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self._send_error_response(500, str(e))
+
+    def _send_error_response(self, status_code, message):
+        self.send_response(status_code)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(json.dumps({"error": message}).encode())
