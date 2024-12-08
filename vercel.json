@@ -2,7 +2,7 @@
     "version": 2,
     "functions": {
       "api/post_message.py": {
-        "runtime": "vercel-python@3.9"
+        "runtime": "python3.9"
       }
     },
     "routes": [
