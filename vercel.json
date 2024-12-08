@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "functions": {
+      "api/post_message.py": {
+        "runtime": "vercel-python@latest"
+      }
+    },
+    "routes": [
+      {
+        "src": "/api/post",
+        "dest": "api/post_message.py"
+      }
+    ]
+  }

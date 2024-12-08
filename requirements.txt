@@ -1,0 +1,3 @@
+atproto
+tweepy
+python-dotenv
